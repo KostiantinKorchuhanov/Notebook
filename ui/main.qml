@@ -9,6 +9,10 @@ ApplicationWindow {
     title: "Notes"
     color: "transparent"
 
+    Component.onCompleted: {
+            interact_database.get_last_note()
+        }
+
     Rectangle {
         anchors.fill: parent
         radius: 20
@@ -55,15 +59,27 @@ ApplicationWindow {
                 color: "#a2c4c9"
 
                 TextArea {
+                    id: mainTextArea
                     anchors.fill: parent
                     anchors.margins: 8
-                    text: ""
+                    onTextChanged: {
+                        interact_database.save_note(mainTextArea.text, 0)
+                    }
                     font.pixelSize: searchPanel.height*0.5
                     color: "#2e3b3d"
                     wrapMode: TextArea.WordWrap
                     verticalAlignment: TextArea.AlignTop
                     horizontalAlignment: TextArea.AlignLeft
                 }
+
+                Connections {
+                    target: interact_database
+                    function onLast_changed(note) {
+                        mainTextArea.text = note
+                    }
+                }
+
+
             }
 
     }
