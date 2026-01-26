@@ -2,14 +2,17 @@ import sys
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQml import QQmlApplicationEngine
 from core.db import noteDatabase
-
+from core.get_info import notesInfo
 
 
 app = QGuiApplication(sys.argv)
 engine = QQmlApplicationEngine()
 
 backend_instance = noteDatabase()
+notes_info = notesInfo(backend_instance)
+backend_instance.notesInfo = notes_info
 engine.rootContext().setContextProperty("interact_database", backend_instance)
+engine.rootContext().setContextProperty("notes_info", notes_info)
 
 engine.quit.connect(app.quit)
 engine.load('ui/main.qml')

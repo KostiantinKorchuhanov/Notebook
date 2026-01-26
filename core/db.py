@@ -1,6 +1,7 @@
 import sqlite3
 import time
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
+from core.get_info import notesInfo
 
 class noteDatabase(QObject):
     last_changed = pyqtSignal(str)
@@ -38,6 +39,7 @@ class noteDatabase(QObject):
 
         self.connection.commit()
         self.get_last_note()
+        self.notesInfo.reload()
 
     @pyqtSlot()
     def get_last_note(self):
@@ -48,4 +50,19 @@ class noteDatabase(QObject):
         if row:
             self.current_id = row[0]
             self.last_changed.emit(row[1])
+
+    @pyqtSlot(int)
+    def select_note(self, note_id):
+        self.current_id = note_id
+        self.cursor.execute(
+            '''
+                SELECT note FROM notestable WHERE id = ?
+            ''',
+            (note_id,)
+        )
+        row = self.cursor.fetchone()
+        if row:
+            self.last_changed.emit(row[0])
+
+
 
